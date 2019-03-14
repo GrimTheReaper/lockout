@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package pb;
+
+message IPCheckRequest {
+  string ip = 1;
+  repeated string countries = 2;
+}
+
+message IPCheckResponse {
+  bool whitelisted = 1;
+}
+
+service WhitelistChecker {
+  rpc CheckIP(IPCheckRequest) returns (IPCheckResponse) {}
+}

@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: lockout
+  labels:
+    app: lockout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lockout
+  template:
+    metadata:
+      labels:
+        app: lockout
+    spec:
+      containers:
+        - name: geoip-checker
+          image: awildtyphlosion/lockout
+          ports:
+            -containerPort:
+              - 8080
+              - 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lockout
+spec:
+  selector:
+    app: lockout
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - protocol: TCP
+    port: 8082
+    targetPort: 8082
