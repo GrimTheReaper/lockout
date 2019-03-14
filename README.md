@@ -9,6 +9,7 @@ Lockout is a basic micro service for checking against GEO-IP, using [GeoLite2](h
 | ------- | ------------|
 || Run `test` `build` `package` |
 | build | Builds the golang application |
+| buildtiny | If you have `upx` installed, you may run this to make the resulting binary ~2MB. Useful for a tiny micro-service. Does other things to slim down the binary |
 | package | Package the build into a docker container |
 | test | Run the unit test |
 

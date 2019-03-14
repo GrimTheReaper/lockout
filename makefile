@@ -15,6 +15,10 @@ test:
 build:
 	env GOOS=linux GARCH=amd64 $(GOBUILD) -o $(BINARY_NAME) -ldflags "-linkmode external -extldflags -static" ./cmd/main.go
 
+buildtiny:
+	env GOOS=linux GARCH=amd64 $(GOBUILD) -o $(BINARY_NAME) -ldflags "-s -w -installsuffix nocgo -linkmode external -extldflags -static" ./cmd/main.go
+	upx --lzma lockout
+
 package:
 	# Gonna copy this cert, cause I can't get the mmdb otherwise...
 	cp /etc/ssl/certs/ca-certificates.crt .
