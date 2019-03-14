@@ -20,6 +20,7 @@ func (api *API) registerHandlers() {
 	api.server.HandleFunc(`/api/v0/ip/whitelist`, checkIPAPI)
 }
 
+// TODO: Restrict HTTPMethod.
 func checkIPAPI(rw http.ResponseWriter, r *http.Request, p *regexp.Regexp) {
 	// Might as well reuse types.
 	var request pb.IPCheckRequest
@@ -34,13 +35,14 @@ func checkIPAPI(rw http.ResponseWriter, r *http.Request, p *regexp.Regexp) {
 	whitelisted, err := checkIP(request.GetIp(), request.GetCountries())
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
-
-		// NOTE: Don't use anonymous types, make solid type/function.
-		serveFormatted(rw, struct {
-			Error string `json:"error"`
-		}{Error: err.Error()})
+		serveFormatted(rw, errorResponse{Error: err.Error()})
 		return
 	}
 
 	serveFormatted(rw, pb.IPCheckResponse{Whitelisted: whitelisted})
+}
+
+// We will need to wrap the error. A lot of frontends can be picky.
+type errorResponse struct {
+	Error string `json:"error"`
 }

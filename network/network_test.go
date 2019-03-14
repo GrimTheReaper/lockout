@@ -76,13 +76,16 @@ func TestAPI(t *testing.T) {
 	ok(t, err)
 	equals(t, true, len(byts) != 0)
 
+	// TODO: Figure out why "http://%v" is invalid.
 	request, err := http.NewRequest("POST", "http://"+fmt.Sprintf("%v:%v/api/v0/ip/whitelist", flagAPIHost, flagAPIPort), bytes.NewReader(byts))
 	ok(t, err)
 
+	http.DefaultClient.Timeout = 4 * time.Second
 	response, err := http.DefaultClient.Do(request)
 	ok(t, err)
 	defer response.Body.Close()
 
+	// The expected result is small, but its always recommended to use a Decoder for http responses.
 	decoder := json.NewDecoder(response.Body)
 
 	var resp pb.IPCheckResponse

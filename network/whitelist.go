@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	// TODO: Slim the Libs.
 	geoip2 "github.com/oschwald/geoip2-golang"
 )
 
@@ -33,6 +34,7 @@ func checkIP(ipAddress string, countries []string) (bool, error) {
 		return false, nil
 	}
 
+	// Look at the file, see if it needs to be updated.
 	fileLock.Lock()
 	if time.Now().After(lastPull.Add(pullTick)) {
 		fileLock.Unlock()
@@ -45,20 +47,19 @@ func checkIP(ipAddress string, countries []string) (bool, error) {
 
 	db, err := geoip2.Open(countryMMDB)
 	if err != nil {
-		fmt.Printf("Failed to open Country.mmdb: %v\n", err)
 		return false, err
 	}
 	defer db.Close()
 
 	ip := net.ParseIP(ipAddress)
-
 	record, err := db.Country(ip)
 	if err != nil {
-		fmt.Printf("Failed to look up IP by Country: %v\n", err)
 		return false, err
 	}
 
+	// TODO: Verify that we're using ISOCode.
 	for _, country := range countries {
+		// Lets match to the ISOCode. Seems like a good idea.
 		if country == record.Country.IsoCode {
 			return true, nil
 		}
@@ -88,6 +89,7 @@ func pullRecord() error {
 		return err
 	}
 
+	// Hopefully this will never happen, but if it does at least we still have the old one.
 	if mmDB == nil {
 		return fmt.Errorf("Failed to find the file in the tar.gz from GeoLite2")
 	}
@@ -121,7 +123,7 @@ func pullRecord() error {
 	return nil
 }
 
-// We're gonna handle this function in memory.
+// We're gonna handle this function in memory since it's pretty small.
 func pullFileFromTar(gzr *gzip.Reader) (io.Reader, error) {
 	tr := tar.NewReader(gzr)
 
@@ -140,8 +142,6 @@ func pullFileFromTar(gzr *gzip.Reader) (io.Reader, error) {
 		}
 
 		switch header.Typeflag {
-		// if the header is nil, just skip it (not sure how this happens)
-
 		// if it's a file, lets check it.
 		case tar.TypeReg:
 			if header.FileInfo().Name() == countryMMDB {

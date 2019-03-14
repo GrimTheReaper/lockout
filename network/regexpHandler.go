@@ -2,6 +2,7 @@ package network
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 )
@@ -9,6 +10,8 @@ import (
 /*
 Source: https://stackoverflow.com/a/6565407
 Although I modified it a bit.
+
+TODO: Remove this. I thought we needed regexp routes at first, but from the looks of it we won't.
 */
 
 type route struct {
@@ -46,7 +49,7 @@ func getFirstCaptureGroup(request *http.Request, pattern *regexp.Regexp) string 
 func serveFormatted(rw http.ResponseWriter, object interface{}) {
 	byts, err := json.MarshalIndent(object, "", "  ")
 	if err != nil {
-		rw.Write([]byte("Failed to encode response"))
+		rw.Write([]byte(fmt.Sprintf("Failed to encode response: %v", err)))
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}

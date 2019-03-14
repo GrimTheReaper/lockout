@@ -16,6 +16,7 @@ func (api *API) startGRPC() error {
 		return err
 	}
 	api.grpcServer = grpc.NewServer()
+
 	pb.RegisterWhitelistCheckerServer(api.grpcServer, &grpcServer{})
 
 	reflection.Register(api.grpcServer)
