@@ -39,11 +39,8 @@ func checkIP(ipAddress string, countries []string) (bool, error) {
 		if err := pullRecord(); err != nil {
 			return false, err
 		}
-	} else {
-		fileLock.Unlock()
+		fileLock.Lock()
 	}
-
-	fileLock.Lock()
 	defer fileLock.Unlock()
 
 	db, err := geoip2.Open(countryMMDB)
